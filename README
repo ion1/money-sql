@@ -1,0 +1,23 @@
+A schema and a couple of functions for tracking monetary loans in a PostgreSQL
+database.
+
+“I paid 42.3 units of money to John Doe.”
+
+  select insert_exchange (
+    'Yours Truly', 'John Doe', 'today', 42.3, 'Optional comment');
+
+Aggregate what I’ve loaned/repaid to others and what they’ve loaned/repaid to
+me (me being user id=5).
+
+  select sum (e.value) as value, users.name
+  from exchanges_with_user (5) as e
+  join users on e.from_user_id = users.id
+  group by users.name
+  order by users.name;
+
+ value |       name        
+-------+-------------------
+   -10 | Jane Doe            She owes me 10 €.
+     0 | John Doe            I don’t owe anything to him and vice versa.
+   -99 | Steve Ballmer       He owes me 99 €.
+    55 | Steve Jobs          I owe 55 € to him.
