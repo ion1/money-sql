@@ -9,15 +9,24 @@ database.
 Aggregate what I’ve loaned/repaid to others and what they’ve loaned/repaid to
 me (me being user id=5).
 
-  select sum (e.value) as value, users.name
+  select sum (e.value) as value, users.name as "from"
   from exchanges_with_user (5) as e
   join users on e.from_user_id = users.id
   group by users.name
   order by users.name;
 
- value |       name        
+ value |       from
 -------+-------------------
    -10 | Jane Doe            She owes me 10 €.
      0 | John Doe            I don’t owe anything to him and vice versa.
    -99 | Steve Ballmer       He owes me 99 €.
     55 | Steve Jobs          I owe 55 € to him.
+
+List exchanges in chronological order.
+
+  select u_from.name as from, u_to.name as to,
+         e.timestamp, e.value, e.comment
+  from exchanges as e
+  join users as u_from on e.from_user_id = u_from.id
+  join users as u_to on e.to_user_id = u_to.id
+  order by e.timestamp;
